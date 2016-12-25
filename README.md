@@ -1,6 +1,6 @@
 # Bruno The Two Wheel Balancing Robot
  
- ![alt text](https://github.com/ryanshiroma/BrunoTheRobot/readmefiles/bruno.png "Logo Title Text 1")
+ ![bruno](readmefiles/bruno.png)
  
 Two wheel balancing robot
 ```C
