@@ -1,6 +1,6 @@
 # Bruno The Two Wheel Balancing Robot
  
-<img src="readmefiles/bruno.png" width="48">
+<img src="readmefiles/bruno.png" width="360">
 Two wheel balancing robot
 ```C
 void setMotorSpeedM2(float vel){
