@@ -1,6 +1,6 @@
 # Bruno The Two Wheel Balancing Robot
  <p align="center">
-<img src="readmefiles/bruno2.jpg" width="360">
+<img src="readmefiles/bruno2.JPG" width="360">
 </p>
 Two wheel balancing robot
 ```C
