@@ -1,6 +1,6 @@
 # Bruno The Two Wheel Balancing Robot
  
- ![bruno](readmefiles/bruno.png)
+ ![bruno](readmefiles/bruno.png= 250x250)
  
 Two wheel balancing robot
 ```C
