@@ -13,7 +13,9 @@ An accelerometer sensor can provide us with an *angle*(lean) measurement. Additi
 **Alright, let's use these angle measurements to drive the motors to balance and voila! Easy as that right?**
 
 Unfortunately no, 🙁 robotic sensors aren't perfect; all sensors are subject to bias and noise in their readings to some degree. This can be due to a variety of factors that can't be controlled including stray magnetic fields, ambient temperature, manufacturing tolerances, etc. 
-![alt-text-1](readmefiles/acc1.png = 300x "title-1") ![alt-text-2](readmefiles/gyro1.png = 300x "title-2")
+ <p align="center">
+<img src="readmefiles/acc1.png" width="300"><img src="readmefiles/gyro1.png" width="300">
+</p>
 Because of this, we need to tackle two problems:
 Problem| Solution | Description
 --- | --- | ---
