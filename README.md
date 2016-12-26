@@ -14,7 +14,7 @@ An accelerometer sensor can provide us with an *angle*(lean) measurement. Additi
 
 Unfortunately no, 🙁 robotic sensors aren't perfect; all sensors are subject to bias and noise in their readings to some degree. This can be due to a variety of factors that can't be controlled including stray magnetic fields, ambient temperature, manufacturing tolerances, etc. 
  <p align="center">
-<img src="readmefiles/acc1.png" width="300"><img src="readmefiles/gyro1.png" width="300">
+<img src="readmefiles/acc1.png" width="400"><img src="readmefiles/gyro1.png" width="400">
 </p>
 Because of this, we need to tackle two problems:
 Problem| Solution | Description
