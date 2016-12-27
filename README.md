@@ -1,38 +1,61 @@
 # Coding a Bayesian Analysis Approach for a two-wheeled robot
 
-<img align="right" src="readmefiles/dog.jpg" width="360">
+<img align="right" src="readmefiles/dog.jpg" width="400">
 
-Balancing robots have always been a fascinating idea to us. Although it is second-nature to us to stand upright, watching a 1 year old baby, or robot do the same feels so magical. The vulnerability of unstable footing seems so humanizing - counter to the traditional notion of a rugged, calculated, robot. And with the recent introduction of low cost sensor electronics, building a robot to emulate this movement is within reach of any electronics hobbyist. 
+Balancing robots have always been a fascinating idea of mine. Although it's second-nature to us to stand upright, watching a 1 year old baby or robot do the same feels so magical. The vulnerability of unstable footing seems so humanizing - counter to the traditional notion of a rugged, calculated, robot. And with the recent introduction of low cost sensor electronics, building a robot to emulate this movement is within reach of any electronics hobbyist. 
+
 So let's first stop and think about how we balance on our two feet. When we feel that we are falling forward, we take a step forward, and when we feel we are falling backward, we take a step back. This same idea goes for two wheeled robots; If the robot knows its leaning in one direction, it can correct itself by driving in the direction of that lean. Therefore, the only information needed in order to keep a two-wheeled robot upright is the degree of this lean. This seems simple enough... so let's design a robot to automate this balancing act!
 
-**OK, so how can we measure the lean angle?**
+**OK, so how can we measure this lean angle?**
 
 An accelerometer sensor can provide us with an *angle*(lean) measurement. Additionally, a gyroscope sensor can measure an *angular velocity*, giving us even more information on this lean. Ok let's collect some data where the robot is being held in perfect steady balance, not moving and straight upright.
 
  <p align="center">
 <img src="readmefiles/acc1.png" width="400"><img src="readmefiles/gyro1.png" width="400">
 </p>
-Looking at these graphs you might ask, *Wait, why aren't these sensors reading zero degrees? And why do the measurements jump around?*
+Looking at these graphs you might ask, 
+*Wait, why aren't these sensors reading zero degrees? And why do the measurements jump around?*
  
 Unfortunately, robotic sensors aren't perfect; all sensors are subject to bias and noise in their readings to some degree. This can be due to a variety of factors that can't be controlled including stray magnetic fields, ambient temperature, manufacturing tolerances, etc. 
 
 If we want accurate readings of the lean angle, we will need to learn how to deal with these issues.
 How did we decide to accomplish this? **Bayesian methods!**
-Problem| Solution
+Problem | Solution
 --- | ---
- What are these biases and noise levels? | Bayesian Estimation
-How do we account for these issues when figuring out lean angle over time? | Recursive Bayesian Updating
+Identify Bias and Noise in the Sensors | Bayesian Estimation
+Make Predictions for the Current Angle | Recursive Bayesian Updating
 
-Once we can answer these two problems, we can figure out an accurate lean angle, and finally drive the motors to balance the robot. Let's jump into our Bayesian approach solutions.
+Once we can answer these two problems, we can figure out an accurate lean angle, and finally drive the motors to balance the robot.
 
 
  <p align="center">
 <img src="readmefiles/bruno2.JPG" width="360">
 </p>
+ Let's jump into our Bayesian approach solutions.
+## Problem 1:  Identify Bias and Noise in the Sensors
+In order to trust the sensor readings we will need to first figure out how the reading relates to the true lean angle. So the first step we need to do is to figure out how the sensor data is distributed when the sensors are being held at a known angle (0 degree lean).
+### How is the data distrubuted?
+We assume is that the data is normally distributed, centered at some bias amount <img src="http://mathurl.com/ygnyf6e.png">, and noise amount <img src="http://mathurl.com/abetvkx.png">. We can think of the sensor noise as the summation of many small unknown distribution random variables coming from things like stray magnetic fields, temperature etc., thus invoking the central limit theorem and consequently, a normal distribution.
+### What are the parameters for this normal distribution?
+Now that we know that the sensor data is normal, we must determine the distribution parameters of each sensor.
+But wait! We don't know what the noise level is OR the amount of bias... Both are unknown to us.
+ <img src="http://mathurl.com/zo2c6mj.png">
+We do however have some information from the manufacturer on what these values should *approximately* be.
+<p align="center">
+Accelerometer Datasheet Information
+  <img src="readmefiles/noiseacc.png">
+Gyroscope Datasheet Information
+ <img src="readmefiles/noisegyro.png">
+ <img src="readmefiles/arrowdown.jpg" width="300">
+ </p>
+Sensor | Bias | Noise
+--- | --- | ---
+Accelerometer | 0 | 0.03 degrees^2
+Gyroscope | 0 | 0.048 dps^2
 
-## Problem 1:  What are these biases and noise levels?
-We first made the assumption that the bias is some unknown constant and that the noise is normally distributed. This is a common assumption for sensor data. We can think of the sensor noise as the summation of many small unknown distribution random variables coming from things like magnetic fields, temperature etc. thus invoking the CLT.
-Bayesian Sensor Calibration
+By using a conjugate prior distribution for an unknown mean and unknown variance normal sampling distriubtion we arrive at a Normal-Inverse-Chi-Squared distribution.
+
+The way we do this on the robot is by quickly collecting 50 readings within the first second of turning the robot on. The robot needs to be carefully held at an angle we suspect will keep the robot balanced.
 
 ## Problem 2: How do we account for these issues when figuring out lean angle over time? 
  Recursive Bayesian Updating
