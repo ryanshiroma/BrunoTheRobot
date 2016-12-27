@@ -1,6 +1,6 @@
 # Coding a Bayesian Analysis Approach for a two-wheeled robot
 
-<img align="right" src="readmefiles/dog.jpg" width="400">
+<img align="right" src="readmefiles/dog.jpg" width="360">
 
 Balancing robots have always been a fascinating idea of mine. Although it's second-nature to us to stand upright, watching a 1 year old baby or robot do the same feels so magical. The vulnerability of unstable footing seems so humanizing - counter to the traditional notion of a rugged, calculated, robot. And with the recent introduction of low cost sensor electronics, building a robot to emulate this movement is within reach of any electronics hobbyist. 
 
@@ -71,7 +71,6 @@ Accelerometer | 95% between -3 and 3 | 95%  between 0 and 0.05
 Gyroscope |  95% between -2 and 2  |  95%  between 0 and 0.08
 
 
-
 By using a conjugate prior distribution for an unknown mean and unknown variance normal sampling distribution we arrive at a Normal-Inverse-Chi-Squared distribution.
 We then can compute parameters for an informative prior distribution for each sensor by incorporating our beliefs.
  <p align="center">
@@ -84,8 +83,48 @@ We then can compute parameters for an informative prior distribution for each se
 </p>
 Now that we have our prior distributions set, we can now go ahead and collect some data.
 ### Data Collection
-The way we do this on the robot is by quickly collecting 50 readings within the first second of turning the robot on. The robot needs to be carefully held at an angle we suspect will keep the robot balanced.
-### Estimates from the Posterior Distribution
+The way we do this on the robot is by quickly collecting 50 readings within the first  half of a second of turning the robot on. The robot needs to be carefully held at an angle that we suspect will keep the robot balanced.
+### Posterior Distribution Estimates
+Each posterior distribution will be formulated as follows:
+<img src="http://mathurl.com/zu5wtwl.png">
+where n=50, and s^2 is the variance of the 20 observed readings.
+Knowing this, our posterior means for bias and noise are  <img src="http://mathurl.com/zdychrf.png">
+With these simple derivations it becomes simple enough to code up the estimates in just a few lines of code!
+```C
+/* BEGIN CALIBRATION */
+
+//collect 50 readings
+for (int i=1 ; i<=50 ; i++){
+
+	gyro_obs[i] = readGyro(); //take a gyroscope observation
+	acc_obs[i] = readAcc(); //take an accelerometer observation
+	delay(10); //delay 10 milliseconds before reading the next set of observations
+}
+
+//gyroscope observation statistics
+gyro_var = variance(gyro_obs); //sample variance
+gyro_sum = sum(gyro_obs); //sum
+
+//accelerometer observation statistics
+acc_var = variance(acc_obs); //sample variance
+acc_sum = sum(acc_obs); //sum
+
+/* calculate posterior parameters */
+// accelerometer noise and bias
+n=50; eta0=0.021; nu0=33.69; sigma0=0.032; s_2=acc_var;
+acc_noise_estimate=(1/(nu0+n))*(nu0*sigma0+(n-1)*acc_var +(eta0*n*s_2)/(eta0+50));
+acc_bias_estimate=acc_sum/(n+eta0);
+
+// gyro noise and bias
+n=50; eta0=0.037; nu0=2.29; sigma0=0.056; s_2=gyro_var;
+gyro_noise_estimate=(1/(nu0+n))*(nu0*sigma0+(n-1)*acc_var +(eta0*n*s_2)/(eta0+50));
+gyro_bias_estimate=gyro_sum/(n+eta0);
+
+/* END CALIBRATION */
+```
+
+Alright cool, now we have estimates for bias and noise for each sensor!
+Let's now move on to how we'll go about estimating the true lean angle given new data.
 ## Problem 2: Make Predictions for the Current Angle 
  Recursive Bayesian Updating
 
