@@ -29,15 +29,16 @@ Make Predictions for the Current Angle | Recursive Bayesian Updating
 Once we can answer these two problems, we can figure out an accurate lean angle, and finally drive the motors to balance the robot.
 
 
- <p align="center">
-<img src="readmefiles/bruno2.JPG" width="360">
-</p>
+<img align="right" src="readmefiles/bruno2.JPG" width="360">
+
  Let's jump into our Bayesian approach solutions.
-## Problem 1:  Identify Bias and Noise in the Sensors
+## Problem 1:  Identifying Bias and Noise in the Sensors
 In order to trust the sensor readings we will need to first figure out how the reading relates to the true lean angle. So the first step we need to do is to figure out how the sensor data is distributed when the sensors are being held at a known angle (0 degree lean). This is like doing a calibration of the sensors every time the the robot is turned on.
 #### How is the sensor data distrubuted?
 We assume is that the data is normally distributed, centered at some bias amount <img src="http://mathurl.com/ygnyf6e.png">, and noise amount <img src="http://mathurl.com/abetvkx.png">. We can think of the sensor noise as the summation of many small unknown distribution random variables coming from things like stray magnetic fields, temperature etc., thus invoking the central limit theorem and consequently, a normal distribution.
+ <p align="center">
  <img src="http://mathurl.com/zo2c6mj.png">
+ </p>
  where y is the observed sensor reading.
 #### What are the parameters for this normal distribution?
 Now that we know that the sensor data is normal, we must determine the distribution parameters of each sensor. But WAIT! We don't know what the noise level is OR the amount of bias... Both are unknown to us...
@@ -46,11 +47,11 @@ From here we take on a Bayesian approach to estimating these parameters.
 #### Prior Distribution Formulation
 While we don't know what the bias and noise values truly are, we do however have some information from the manufacturer on what these values should *approximately* be.
 
-###### Accelerometer Datasheet Information
+###### Accelerometer Datasheet Information [pdf](https://cdn-shop.adafruit.com/datasheets/LSM303DLHC.PDF)
 
   <img src="readmefiles/noiseacc.png">
 
-###### Gyroscope Datasheet Information
+###### Gyroscope Datasheet Information [pdf](http://www.st.com/content/ccc/resource/technical/document/datasheet/35/b1/e0/39/71/57/43/01/DM00060659.pdf/files/DM00060659.pdf/jcr:content/translations/en.DM00060659.pdf)
 
  <img src="readmefiles/noisegyro.png">
 
@@ -82,9 +83,9 @@ We then can compute parameters for an informative prior distribution for each se
 <img src="readmefiles/prioracc.png" width="400"><img src="readmefiles/priorgyro.png" width="400">
 </p>
 Now that we have our prior distributions set, we can now go ahead and collect some data.
-### Data Collection
+#### Data Collection
 The way we do this on the robot is by quickly collecting 50 readings within the first  half of a second of turning the robot on. The robot needs to be carefully held at an angle that we suspect will keep the robot balanced.
-### Posterior Distribution Estimates
+#### Posterior Distribution Estimates
 Each posterior distribution will be formulated as follows:
 <img src="http://mathurl.com/zu5wtwl.png">
 where n=50, and s^2 is the variance of the 20 observed readings.
@@ -124,35 +125,28 @@ gyro_bias_estimate=gyro_sum/(n+eta0);
 ```
 
 Alright cool, now we have estimates for bias and noise for each sensor!
-Let's now move on to how we'll go about estimating the true lean angle given new data.
-## Problem 2: Make Predictions for the Current Angle 
- Recursive Bayesian Updating
+Let's now move on to how we'll go about estimating the true lean angle given new observations.
+## Problem 2: Making Predictions on the Current Angle 
+ Once the calibration is completed, the robot will now be left on its own to balance. It's at this point where the true angle will *stray* from zero. In fact, it will probably start falling in one direction. Therefore the robot needs to quickly find its bearings and correct itself before that fall actually happens.  And since a fall can happen in a matter of milliseconds, we'll need to quickly figure out the true current angle after each and every sensor reading.
 
 
-## 1. Pre-Processing
-In this step, we used existing sensor data collection libraries to query each sensor 100 times per second. The current sensor readings for the rest of the code are named as follows:
+### Recursive Bayesian Updating
+As we had decided earlier, the distribution of sensor readings should come from a normal distribution centered around our belief of the true angle and a variance given from the noise we found during the calibration step. Also, since we are dealing with an update at each timestep(1/100th of a second), we use the subscript t to identify which time step we are referring to.
 
-Sensor |What does it measure? | Variable Name
---- |---| ---
-Accelerometer |number of degrees off of a vertical robot position |  `angle` 
-Gyroscope | `angular_vel`
+<img src="http://mathurl.com/hu38cq7.png">
 
+Where <img src="http://mathurl.com/zftrqwk.png"> is a 2x1 vector of the estimated biases and <img src="http://mathurl.com/j7vwwvf.png"> is a 2x2 diagonal covariance matrix of the estimated noises we found in problem 1.
+And where <img src="http://mathurl.com/hmc5fww.png"> is a 2x1 vector of our belief of what the true lean angle is at time t.
+#### Prior Formulation
+OK, so this time around, the true angle is unknown and the noise is known. So how do we come up with our belief in the true lean angle and formulate a prior? 
 
-Combine two noisy angle sensor readings into a single prediction for the current angle. 
-```C
-void setMotorSpeedM2(float vel){
-   myTimer2.end();
-   if(vel>0){
-      digitalWriteFast(Motor2Dir,0);
-   }else{
-      digitalWriteFast(Motor2Dir,1);
-   }
-   myTimer2.begin(step_one2, 43478/abs((vel)));  
-}
+What information do we have available to formulate our belief?
 
+- Our belief of where the true angle was at time t-1  
+- where physics would predict the next true angle to be
 
-```
-
+<img src="readmefiles/equation.png" width=1000>
+#### Posterior
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=K-8RJ1lW92k
 " target="_blank"><img src="http://img.youtube.com/vi/K-8RJ1lW92k/0.jpg" 
 alt="Bruno Video" width="240" height="180" border="10" /></a>
