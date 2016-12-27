@@ -1,6 +1,6 @@
 # Coding a Bayesian Analysis Approach for a two-wheeled robot
 
-<img align="right" src="readmefiles/dog.jpg" width="430">
+<img align="right" src="readmefiles/dog.jpg" width="350">
 
 Balancing robots have always been a fascinating idea of mine. Although it's second-nature to us to stand upright, watching a 1 year old baby or robot do the same feels so magical. The vulnerability of unstable footing seems so humanizing - counter to the traditional notion of a rugged, calculated, robot. And with the recent introduction of low cost sensor electronics, building a robot to emulate this movement is within reach of any electronics hobbyist. 
 
@@ -46,13 +46,13 @@ From here we take on a Bayesian approach to estimating these parameters.
 #### Prior Distribution Formulation
 While we don't know what the bias and noise values truly are, we do however have some information from the manufacturer on what these values should *approximately* be.
 <p align="center">
-###### Accelerometer Datasheet Information
+ Accelerometer Datasheet Information
  </p>
  <p align="center">
   <img src="readmefiles/noiseacc.png">
  </p>
  <p align="center">
-###### Gyroscope Datasheet Information
+Gyroscope Datasheet Information
  </p>
  <p align="center">
  <img src="readmefiles/noisegyro.png">
@@ -67,6 +67,7 @@ Sensor | Manufacturer's Bias Estimate | Manufacturer'as Noise Estimate
 --- | --- | ---
 Accelerometer | 0 | 0.030 degrees^2
 Gyroscope | 0 | 0.048 dps^2
+
   </p>
 We'll now use this information to form our own belief of the bias and noise parameters:
  <p align="center">
@@ -75,6 +76,7 @@ Sensor | Our Bias Belief | Our Noise Belief
 --- | --- | ---
 Accelerometer | 95% between -3 and 3 | 95%  between 0 and 0.05
 Gyroscope |  95% between -2 and 2  |  95%  between 0 and 0.08
+
   </p>
 
 By using a conjugate prior distribution for an unknown mean and unknown variance normal sampling distribution we arrive at a Normal-Inverse-Chi-Squared distribution.
@@ -87,7 +89,7 @@ We then can compute parameters for an informative prior distribution for each se
  <p align="center">
 <img src="readmefiles/prioracc.png" width="400"><img src="readmefiles/priorgyro.png" width="400">
 </p>
-Now that we have our prior distribution set, we can now go ahead and collect some data.
+Now that we have our prior distributions set, we can now go ahead and collect some data.
 ### Data Collection
 The way we do this on the robot is by quickly collecting 50 readings within the first second of turning the robot on. The robot needs to be carefully held at an angle we suspect will keep the robot balanced.
 ### Estimates from the Posterior Distribution
