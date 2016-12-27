@@ -29,10 +29,9 @@ Make Predictions for the Current Angle | Recursive Bayesian Updating
 Once we can answer these two problems, we can figure out an accurate lean angle, and finally drive the motors to balance the robot.
 
 
-<img align="right" src="readmefiles/bruno2.JPG" width="360">
-
  Let's jump into our Bayesian approach solutions.
 ## Problem 1:  Identifying Bias and Noise in the Sensors
+<img align="right" src="readmefiles/bruno2.JPG" width="360">
 In order to trust the sensor readings we will need to first figure out how the reading relates to the true lean angle. So the first step we need to do is to figure out how the sensor data is distributed when the sensors are being held at a known angle (0 degree lean). This is like doing a calibration of the sensors every time the the robot is turned on.
 #### How is the sensor data distrubuted?
 We assume is that the data is normally distributed, centered at some bias amount <img src="http://mathurl.com/ygnyf6e.png">, and noise amount <img src="http://mathurl.com/abetvkx.png">. We can think of the sensor noise as the summation of many small unknown distribution random variables coming from things like stray magnetic fields, temperature etc., thus invoking the central limit theorem and consequently, a normal distribution.
@@ -88,6 +87,7 @@ The way we do this on the robot is by quickly collecting 50 readings within the 
 #### Posterior Distribution Estimates
 Each posterior distribution will be formulated as follows:
 <img src="http://mathurl.com/zu5wtwl.png">
+
 where n=50, and s^2 is the variance of the 20 observed readings.
 Knowing this, our posterior means for bias and noise are  <img src="http://mathurl.com/zdychrf.png">
 With these simple derivations it becomes simple enough to code up the estimates in just a few lines of code!
