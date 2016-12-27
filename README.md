@@ -146,24 +146,29 @@ A Bivariate Normal is the conjugate prior so <img src="http://mathurl.com/ztj35m
 *What information do we have available to formulate our belief and set these prior parameters?*
 
 - Our belief of where the true angle and true angular velocity was at time t-1
+
 <img src="http://mathurl.com/zf59myy.png">
 
 - where physics would predict the next true angle to be
 <img src="readmefiles/equation.png" width=500>
 
 We can represent this physics transformation in matrix form as:
+
 <img src="http://mathurl.com/haqvjez.png">
 
 So to find the distribution of  <img src="http://mathurl.com/hmc5fww.png"> we can derive the parameters as follows:
+
 <img src="http://mathurl.com/jqtsaym.png">
 
 <img src="http://mathurl.com/jgugebt.png">
 
 Before we go any further, we must first acknowledge that using those physics equations don't account for all changes from timestep to timestep! In those equations we see that we assume that velocity is constant which is NOT true! Since we cannot account for all disturbances to the angle or angular velocity from time step to time step, the simplest way to ease this issue is to inject extra uncertainty in our belief.
+
 So let's redefine <img src="http://mathurl.com/ju9jmw4.png"> as:
  <img src="http://mathurl.com/jympr27.png">
 
 where <img src="http://mathurl.com/hgr8na2.png">
+
 *This variance matrix can be derived by assuming that angular acceleration is constant and that the expected noise level is equal to the change in velocity between time steps*
 
 Therefore our final prior distribution parameters can becomputed as functions of previous distribution parameters.
