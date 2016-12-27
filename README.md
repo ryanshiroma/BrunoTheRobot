@@ -1,4 +1,4 @@
-# Coding a Bayesian Analysis Approach for a two-wheeled robot
+# Coding a two-wheeled robot with a Bayesian Analysis Approach
 
 <img align="right" src="readmefiles/dog.jpg" width="360">
 
@@ -131,25 +131,94 @@ Let's now move on to how we'll go about estimating the true lean angle given new
 
 
 ### Recursive Bayesian Updating
-As we had decided earlier, the distribution of sensor readings should come from a normal distribution centered around our belief of the true angle and a variance given from the noise we found during the calibration step. Also, since we are dealing with an update at each timestep(1/100th of a second), we use the subscript t to identify which time step we are referring to.
+As we had discussed earlier, the distribution of sensor readings should come from a normal distribution centered around our belief of the true angle and a variance given from the noise we found during the calibration step. Also, since we are dealing with an update at each timestep(1/100th of a second), we use the subscript t to identify which time step we are referring to.
 
 <img src="http://mathurl.com/hu38cq7.png">
 
 Where <img src="http://mathurl.com/zftrqwk.png"> is a 2x1 vector of the estimated biases and <img src="http://mathurl.com/j7vwwvf.png"> is a 2x2 diagonal covariance matrix of the estimated noises we found in problem 1.
-And where <img src="http://mathurl.com/hmc5fww.png"> is a 2x1 vector of our belief of what the true lean angle is at time t.
+And where <img src="http://mathurl.com/hmc5fww.png"> is a 2x1 vector of our belief of what the true lean angle and true angular velocity is at time t.
 #### Prior Formulation
+
 OK, so this time around, the true angle is unknown and the noise is known. So how do we come up with our belief in the true lean angle and formulate a prior? 
 
-What information do we have available to formulate our belief?
+A Bivariate Normal is the conjugate prior so <img src="http://mathurl.com/ztj35m7.png"> 
 
-- Our belief of where the true angle was at time t-1  
+*What information do we have available to formulate our belief and set these prior parameters?*
+
+- Our belief of where the true angle and true angular velocity was at time t-1
+<img src="http://mathurl.com/zf59myy.png">
+
 - where physics would predict the next true angle to be
+<img src="readmefiles/equation.png" width=500>
 
-<img src="readmefiles/equation.png" width=1000>
+We can represent this physics transformation in matrix form as:
+<img src="http://mathurl.com/haqvjez.png">
+
+So to find the distribution of  <img src="http://mathurl.com/hmc5fww.png"> we can derive the parameters as follows:
+<img src="http://mathurl.com/jqtsaym.png">
+
+<img src="http://mathurl.com/jgugebt.png">
+
+Before we go any further, we must first acknowledge that using those physics equations don't account for all changes from timestep to timestep! In those equations we see that we assume that velocity is constant which is NOT true! Since we cannot account for all disturbances to the angle or angular velocity from time step to time step, the simplest way to ease this issue is to inject extra uncertainty in our belief.
+So let's redefine <img src="http://mathurl.com/ju9jmw4.png"> as:
+ <img src="http://mathurl.com/jympr27.png">
+
+where <img src="http://mathurl.com/hgr8na2.png">
+*This variance matrix can be derived by assuming that angular acceleration is constant and that the expected noise level is equal to the change in velocity between time steps*
+
+Therefore our final prior distribution parameters can becomputed as functions of previous distribution parameters.
+<img src="http://mathurl.com/zae8ks5.png">
 #### Posterior
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=K-8RJ1lW92k
-" target="_blank"><img src="http://img.youtube.com/vi/K-8RJ1lW92k/0.jpg" 
-alt="Bruno Video" width="240" height="180" border="10" /></a>
+Finally, the posterior distribution can be derived to be:
+<img src="http://mathurl.com/hv8o33h.png">
+
+And our true angle and true angular velocity beliefs are simply:
+<img src="http://mathurl.com/hgsn3wg.png">
+
+The "true angle belief" will then get passed off to code which can convert an angle into drive motor inputs.
+
+These posterior will then be recycled as part of the prior for the next time step and the next.
+
+Phew all done!
+Now let's get to the code:
+```C
+/* BEGIN CALIBRATION */
+
+//collect 50 readings
+for (int i=1 ; i<=50 ; i++){
+
+	gyro_obs[i] = readGyro(); //take a gyroscope observation
+	acc_obs[i] = readAcc(); //take an accelerometer observation
+	delay(10); //delay 10 milliseconds before reading the next set of observations
+}
+
+//gyroscope observation statistics
+gyro_var = variance(gyro_obs); //sample variance
+gyro_sum = sum(gyro_obs); //sum
+
+//accelerometer observation statistics
+acc_var = variance(acc_obs); //sample variance
+acc_sum = sum(acc_obs); //sum
+
+/* calculate posterior parameters */
+// accelerometer noise and bias
+n=50; eta0=0.021; nu0=33.69; sigma0=0.032; s_2=acc_var;
+acc_noise_estimate=(1/(nu0+n))*(nu0*sigma0+(n-1)*acc_var +(eta0*n*s_2)/(eta0+50));
+acc_bias_estimate=acc_sum/(n+eta0);
+
+// gyro noise and bias
+n=50; eta0=0.037; nu0=2.29; sigma0=0.056; s_2=gyro_var;
+gyro_noise_estimate=(1/(nu0+n))*(nu0*sigma0+(n-1)*acc_var +(eta0*n*s_2)/(eta0+50));
+gyro_bias_estimate=gyro_sum/(n+eta0);
+
+/* END CALIBRATION */
+```
+
+When this process gets repeated, we can see how this Bayesian updating does a fairly good job at smoothing out the noise issues with the sensors.
+<img src="readmefiles/final.png">
+We can also see how <img src="http://mathurl.com/zftskaf.png">  changes over time:
+<img src="readmefiles/process.png">
+
 
 
 Now that we've got an estimate for the current angle of the robot, we can now drive the motors in a way that automatically balances it.  This involves knowledge of control systems and microcontroller hardware interrupts. Code for this part is in the INO file however both concepts are beyond the scope of this writeup but can be researched below:
@@ -166,4 +235,9 @@ We can do this under the following assumptions:
  - each time we calibrate, we are ignorant to any differences that might affect bias thus giving us exchangeability. *(we know that ambient temperature and battery voltage does affect biases and noises but we don't have temps and voltages available as known data)*
 2. Try to incorporate the uncertainty in our bias estimates in our update step. As of now, this information is not used in the analysis.
 
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=K-8RJ1lW92k
+" target="_blank"><img src="http://img.youtube.com/vi/K-8RJ1lW92k/0.jpg" 
+alt="Bruno Video" width="240" height="180" border="10" /></a>
 
+
+## References
