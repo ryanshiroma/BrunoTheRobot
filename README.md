@@ -1,6 +1,6 @@
 # Coding a Bayesian Analysis Approach for a two-wheeled robot
 
-<img align="right" src="readmefiles/dog.jpg" width="440">
+<img align="right" src="readmefiles/dog.jpg" width="430">
 
 Balancing robots have always been a fascinating idea of mine. Although it's second-nature to us to stand upright, watching a 1 year old baby or robot do the same feels so magical. The vulnerability of unstable footing seems so humanizing - counter to the traditional notion of a rugged, calculated, robot. And with the recent introduction of low cost sensor electronics, building a robot to emulate this movement is within reach of any electronics hobbyist. 
 
@@ -20,6 +20,7 @@ Unfortunately, robotic sensors aren't perfect; all sensors are subject to bias a
 
 If we want accurate readings of the lean angle, we will need to learn how to deal with these issues.
 How did we decide to accomplish this? **Bayesian methods!**
+
 Problem | Solution
 --- | ---
 Identify Bias and Noise in the Sensors | Bayesian Estimation
@@ -33,41 +34,64 @@ Once we can answer these two problems, we can figure out an accurate lean angle,
 </p>
  Let's jump into our Bayesian approach solutions.
 ## Problem 1:  Identify Bias and Noise in the Sensors
-In order to trust the sensor readings we will need to first figure out how the reading relates to the true lean angle. So the first step we need to do is to figure out how the sensor data is distributed when the sensors are being held at a known angle (0 degree lean).
-### How is the data distrubuted?
+In order to trust the sensor readings we will need to first figure out how the reading relates to the true lean angle. So the first step we need to do is to figure out how the sensor data is distributed when the sensors are being held at a known angle (0 degree lean). This is like doing a calibration of the sensors every time the the robot is turned on.
+#### How is the sensor data distrubuted?
 We assume is that the data is normally distributed, centered at some bias amount <img src="http://mathurl.com/ygnyf6e.png">, and noise amount <img src="http://mathurl.com/abetvkx.png">. We can think of the sensor noise as the summation of many small unknown distribution random variables coming from things like stray magnetic fields, temperature etc., thus invoking the central limit theorem and consequently, a normal distribution.
-### What are the parameters for this normal distribution?
-Now that we know that the sensor data is normal, we must determine the distribution parameters of each sensor.
-But wait! We don't know what the noise level is OR the amount of bias... Both are unknown to us.
  <img src="http://mathurl.com/zo2c6mj.png">
-We do however have some information from the manufacturer on what these values should *approximately* be.
+ where y is the observed sensor reading.
+#### What are the parameters for this normal distribution?
+Now that we know that the sensor data is normal, we must determine the distribution parameters of each sensor. But WAIT! We don't know what the noise level is OR the amount of bias... Both are unknown to us...
+From here we take on a Bayesian approach to estimating these parameters.
+### Bayesian Estimation of Sensor Bias and Noise
+#### Prior Distribution Formulation
+While we don't know what the bias and noise values truly are, we do however have some information from the manufacturer on what these values should *approximately* be.
 <p align="center">
-Accelerometer Datasheet Information
+###### Accelerometer Datasheet Information
  </p>
  <p align="center">
   <img src="readmefiles/noiseacc.png">
  </p>
  <p align="center">
-Gyroscope Datasheet Information
+###### Gyroscope Datasheet Information
  </p>
  <p align="center">
  <img src="readmefiles/noisegyro.png">
   </p>
  <p align="center">
- <img src="readmefiles/arrowdown.jpg" width="300">
+ <img src="readmefiles/arrowdown.jpg" width="150">
   </p>
+  
  <p align="center">
-
-Sensor | Bias | Noise
+ 
+Sensor | Manufacturer's Bias Estimate | Manufacturer'as Noise Estimate
 --- | --- | ---
-Accelerometer | 0 | 0.03 degrees^2
+Accelerometer | 0 | 0.030 degrees^2
 Gyroscope | 0 | 0.048 dps^2
   </p>
-By using a conjugate prior distribution for an unknown mean and unknown variance normal sampling distriubtion we arrive at a Normal-Inverse-Chi-Squared distribution.
+We'll now use this information to form our own belief of the bias and noise parameters:
+ <p align="center">
+ 
+Sensor | Our Bias Belief | Our Noise Belief
+--- | --- | ---
+Accelerometer | 95% between -3 and 3 | 95%  between 0 and 0.05
+Gyroscope |  95% between -2 and 2  |  95%  between 0 and 0.08
+  </p>
 
+By using a conjugate prior distribution for an unknown mean and unknown variance normal sampling distribution we arrive at a Normal-Inverse-Chi-Squared distribution.
+We then can compute parameters for an informative prior distribution for each sensor by incorporating our beliefs.
+ <p align="center">
+<img src="http://mathurl.com/jupngvn.png">
+<img src="http://mathurl.com/hmux9k5.png">
+</p>
+
+ <p align="center">
+<img src="readmefiles/prioracc.png" width="400"><img src="readmefiles/priorgyro.png" width="400">
+</p>
+Now that we have our prior distribution set, we can now go ahead and collect some data.
+### Data Collection
 The way we do this on the robot is by quickly collecting 50 readings within the first second of turning the robot on. The robot needs to be carefully held at an angle we suspect will keep the robot balanced.
-
-## Problem 2: How do we account for these issues when figuring out lean angle over time? 
+### Estimates from the Posterior Distribution
+## Problem 2: Make Predictions for the Current Angle 
  Recursive Bayesian Updating
 
 
@@ -94,6 +118,10 @@ void setMotorSpeedM2(float vel){
 
 
 ```
+
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=K-8RJ1lW92k
+" target="_blank"><img src="http://img.youtube.com/vi/K-8RJ1lW92k/0.jpg" 
+alt="Bruno Video" width="240" height="180" border="10" /></a>
 
 
 Now that we've got an estimate for the current angle of the robot, we can now drive the motors in a way that automatically balances it.  This involves knowledge of control systems and microcontroller hardware interrupts. Code for this part is in the INO file however both concepts are beyond the scope of this writeup but can be researched below:
