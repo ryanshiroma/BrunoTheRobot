@@ -121,6 +121,8 @@ n=50; eta0=0.037; nu0=2.29; sigma0=0.056; s_2=gyro_var;
 gyro_noise_estimate=(1/(nu0+n))*(nu0*sigma0+(n-1)*acc_var +(eta0*n*s_2)/(eta0+50));
 gyro_bias_estimate=gyro_sum/(n+eta0);
 
+muC=[acc_bias_estimate, gyro_bias_estimate];
+sigmaC=[acc_noise_estimate, gyro_noise_estimate];
 /* END CALIBRATION */
 ```
 
@@ -178,7 +180,7 @@ Finally, the posterior distribution can be derived to be:
 <img src="http://mathurl.com/hv8o33h.png">
 
 And our true angle and true angular velocity beliefs are simply:
-<img src="http://mathurl.com/hgsn3wg.png">
+<img src="http://mathurl.com/jhbwzqc.png"> = <img src="http://mathurl.com/hpra2wm.png">
 
 The "true angle belief" will then get passed off to code which can convert an angle into drive motor inputs.
 
@@ -187,36 +189,32 @@ These posterior will then be recycled as part of the prior for the next time ste
 Phew all done!
 Now let's get to the code:
 ```C
-/* BEGIN CALIBRATION */
 
-//collect 50 readings
-for (int i=1 ; i<=50 ; i++){
 
-	gyro_obs[i] = readGyro(); //take a gyroscope observation
-	acc_obs[i] = readAcc(); //take an accelerometer observation
-	delay(10); //delay 10 milliseconds before reading the next set of observations
+/* BEGIN UPDATE STEP */
+
+//loop indefintely
+while(1){
+	//take some readings
+	acc_read = readAcc(); //take an accelerometer observation
+	gyro_read = readGyro(); //take a gyroscope observation
+	y=[acc_read,gyro_read];
+	
+	//move up one timestep and calculate new prior parameters
+	sigmaPrior=A*sigmaPost*transpose(A)+sigmaQ*(muPost[1]-y[1]);;
+	muPrior=A*muPost;
+	
+	//calculate new posterior parameters
+	muPost=inverse(inverse(sigmaPrior)+inverse(sigmaC))*(sigmaPrior*muPrior+sigmaC*(y-muC);
+	
+	///////////////////////////////////////////
+	pass muPost to motor control code...
+	///////////////////////////////////////////
+
+	delay(10); //delay 10 milliseconds before starting the next update
 }
 
-//gyroscope observation statistics
-gyro_var = variance(gyro_obs); //sample variance
-gyro_sum = sum(gyro_obs); //sum
-
-//accelerometer observation statistics
-acc_var = variance(acc_obs); //sample variance
-acc_sum = sum(acc_obs); //sum
-
-/* calculate posterior parameters */
-// accelerometer noise and bias
-n=50; eta0=0.021; nu0=33.69; sigma0=0.032; s_2=acc_var;
-acc_noise_estimate=(1/(nu0+n))*(nu0*sigma0+(n-1)*acc_var +(eta0*n*s_2)/(eta0+50));
-acc_bias_estimate=acc_sum/(n+eta0);
-
-// gyro noise and bias
-n=50; eta0=0.037; nu0=2.29; sigma0=0.056; s_2=gyro_var;
-gyro_noise_estimate=(1/(nu0+n))*(nu0*sigma0+(n-1)*acc_var +(eta0*n*s_2)/(eta0+50));
-gyro_bias_estimate=gyro_sum/(n+eta0);
-
-/* END CALIBRATION */
+/* END UPDATE STEP */
 ```
 
 When this process gets repeated, we can see how this Bayesian updating does a fairly good job at smoothing out the noise issues with the sensors.
@@ -246,3 +244,12 @@ alt="Bruno Video" width="240" height="180" border="10" /></a>
 
 
 ## References
+- Dr. Bee Leng Lee. Lecture slides. Math 264, SJSU. Fall 2016.
+
+
+- Gelman, Andrew. *Bayesian Data Analysis*. Chapman & Hall CRC, 2014. Print.
+
+- *LSM303DLHC: Ultra-compact high-performance eCompass module: 3D accelerometer and 3D magnetometer*. ST Electronics. Nov 2013. No 018771. Rev. 2
+
+
+- *L3GD20H MEMS motion sensor: three-axis digital output gyroscope*. ST Electronics. March 2013. No 023469. Rev. 2
