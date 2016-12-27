@@ -2,7 +2,7 @@
 
 <img align="right" src="readmefiles/dog.jpg" width="360">
 
-Balancing robots have always been a fascinating concept to me. Although it's second-nature to us to stand upright, watching a 1 year old baby or robot do the same feels so magical. The vulnerability of unstable footing seems so humanizing - counter to the traditional notion of a rugged, calculated, robot. And with the recent introduction of low cost sensor electronics, building a robot to emulate this movement is within reach of any electronics hobbyist. 
+Balancing robots have always been a fascinating concept to me. Although it's second-nature to us to stand upright, watching a 1 year old baby or robot do the same feels so surreal. The vulnerability of unstable footing seems so humanizing - counter to the traditional notion of a rugged, calculated, robot. And with the recent introduction of low cost sensor electronics, building a robot to emulate this movement is within reach of any electronics hobbyist. 
 
 So let's first stop and think about how we balance on our two feet. When we feel that we are falling forward, we take a step forward, and when we feel we are falling backward, we take a step back. This same idea goes for two wheeled robots; If the robot knows its leaning in one direction, it can correct itself by driving in the direction of that lean. Therefore, the only information needed in order to keep a two-wheeled robot upright is the degree of this lean. This seems simple enough... so let's design a robot to automate this balancing act!
 
@@ -201,14 +201,16 @@ while(1){
 	y=[acc_read,gyro_read];
 	
 	//move up one timestep and calculate new prior parameters
-	sigmaPrior=A*sigmaPost*transpose(A)+sigmaQ*(muPost[1]-y[1]);;
+	sigmaPrior=A*sigmaPost*transpose(A)+sigmaQ*(muPost[1]-y[1]);
 	muPrior=A*muPost;
 	
 	//calculate new posterior parameters
-	muPost=inverse(inverse(sigmaPrior)+inverse(sigmaC))*(sigmaPrior*muPrior+sigmaC*(y-muC);
+	sigmaPost=inverse(inverse(sigmaPrior)+inverse(sigmaC));
+	muPost=sigmaPost*(sigmaPrior*muPrior+sigmaC*(y-muC));
+
 	
 	///////////////////////////////////////////
-	pass muPost to motor control code...
+	pass muPost to motor control code to rebalance...
 	///////////////////////////////////////////
 
 	delay(10); //delay 10 milliseconds before starting the next update
