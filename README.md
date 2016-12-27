@@ -1,6 +1,6 @@
 # Coding a Bayesian Analysis Approach for a two-wheeled robot
 
-<img align="right" src="readmefiles/dog.jpg" width="400">
+<img align="right" src="readmefiles/dog.jpg" width="440">
 
 Balancing robots have always been a fascinating idea of mine. Although it's second-nature to us to stand upright, watching a 1 year old baby or robot do the same feels so magical. The vulnerability of unstable footing seems so humanizing - counter to the traditional notion of a rugged, calculated, robot. And with the recent introduction of low cost sensor electronics, building a robot to emulate this movement is within reach of any electronics hobbyist. 
 
@@ -43,16 +43,26 @@ But wait! We don't know what the noise level is OR the amount of bias... Both ar
 We do however have some information from the manufacturer on what these values should *approximately* be.
 <p align="center">
 Accelerometer Datasheet Information
-  <img src="readmefiles/noiseacc.png">
-Gyroscope Datasheet Information
- <img src="readmefiles/noisegyro.png">
- <img src="readmefiles/arrowdown.jpg" width="300">
  </p>
+ <p align="center">
+  <img src="readmefiles/noiseacc.png">
+ </p>
+ <p align="center">
+Gyroscope Datasheet Information
+ </p>
+ <p align="center">
+ <img src="readmefiles/noisegyro.png">
+  </p>
+ <p align="center">
+ <img src="readmefiles/arrowdown.jpg" width="300">
+  </p>
+ <p align="center">
+
 Sensor | Bias | Noise
 --- | --- | ---
 Accelerometer | 0 | 0.03 degrees^2
 Gyroscope | 0 | 0.048 dps^2
-
+  </p>
 By using a conjugate prior distribution for an unknown mean and unknown variance normal sampling distriubtion we arrive at a Normal-Inverse-Chi-Squared distribution.
 
 The way we do this on the robot is by quickly collecting 50 readings within the first second of turning the robot on. The robot needs to be carefully held at an angle we suspect will keep the robot balanced.
