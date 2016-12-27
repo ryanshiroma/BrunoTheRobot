@@ -1,6 +1,6 @@
 # Coding a Bayesian Analysis Approach for a two-wheeled robot
 
-<img align="right" src="readmefiles/dog.jpg">
+<img align="right" src="readmefiles/dog.jpg" width="360">
 
 Balancing robots have always been a fascinating idea to us. Although it is second-nature to us to stand upright, watching a 1 year old baby, or robot do the same feels so magical. The vulnerability of unstable footing seems so humanizing - counter to the traditional notion of a rugged, calculated, robot. And with the recent introduction of low cost sensor electronics, building a robot to emulate this movement is within reach of any electronics hobbyist. 
 So let's first stop and think about how we balance on our two feet. When we feel that we are falling forward, we take a step forward, and when we feel we are falling backward, we take a step back. This same idea goes for two wheeled robots; If the robot knows its leaning in one direction, it can correct itself by driving in the direction of that lean. Therefore, the only information needed in order to keep a two-wheeled robot upright is the degree of this lean. This seems simple enough... so let's design a robot to automate this balancing act!
