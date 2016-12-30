@@ -164,7 +164,7 @@ So to find the distribution of  <img src="http://mathurl.com/hmc5fww.png"> we ca
 
 <img src="http://mathurl.com/jgugebt.png">
 
-Before we go any further, we must first acknowledge that using those physics equations don't account for all changes from timestep to timestep! In those equations we see that we assume that velocity is constant which is NOT true! Since we cannot account for all disturbances to the angle or angular velocity from time step to time step, the simplest way to ease this issue is to inject extra uncertainty in our belief.
+Before we go any further, we must first acknowledge that using those physics equations don't account for all changes from timestep to timestep! In those equations we see that we assume that velocity is constant which is NOT true! Since we cannot account for all disturbances to the angle or angular velocity from time step to time step, the simplest way to ease this issue is to inject extra uncertainty in our belief. When there is a large change in angular velocity from the previous time step(angular acceleration), we are less sure in our belief of the current angle and thus we increase the uncertainty linearly with angular acceleration.
 
 So let's redefine <img src="http://mathurl.com/ju9jmw4.png"> as:
  <img src="http://mathurl.com/jympr27.png">
@@ -186,7 +186,7 @@ The "true angle belief" will then get passed off to code which can convert an an
 
 These posterior will then be recycled as part of the prior for the next time step and the next.
 
-Phew all done!
+Phew, all done!
 Now let's get to the code:
 ```C
 
@@ -221,7 +221,7 @@ while(1){
 
 When this process gets repeated, we can see how this Bayesian updating does a fairly good job at smoothing out the noise issues with the sensors.
 <img src="readmefiles/final.png">
-We can also see how <img src="http://mathurl.com/zftskaf.png">  changes over time:
+We can also see how <img src="http://mathurl.com/zftskaf.png">  changes over time. As we see greater disturbances in the angle from time step to time step, we see that our uncertainty in our prior distribution increases:
 <img src="readmefiles/process.png">
 
 
