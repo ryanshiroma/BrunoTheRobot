@@ -94,7 +94,7 @@ With these simple derivations it becomes simple enough to code up the estimates 
 ```C
 /* BEGIN CALIBRATION */
 
-//collect 50 readings
+//We first need to collect 50 observations to use as data
 for (int i=1 ; i<=50 ; i++){
 
 	gyro_obs[i] = readGyro(); //take a gyroscope observation
@@ -102,27 +102,28 @@ for (int i=1 ; i<=50 ; i++){
 	delay(10); //delay 10 milliseconds before reading the next set of observations
 }
 
-//gyroscope observation statistics
+//Now calculate the needed statistics for the gyroscope observations
 gyro_var = variance(gyro_obs); //sample variance
 gyro_sum = sum(gyro_obs); //sum
 
-//accelerometer observation statistics
+//same for the accelerometer observations
 acc_var = variance(acc_obs); //sample variance
 acc_sum = sum(acc_obs); //sum
 
-/* calculate posterior parameters */
-// accelerometer noise and bias
+/* Using the precalculated prior parameters, calculate the posterior bias and noise estimates */
+//first calculate accelerometer bias and noise estimates
 n=50; eta0=0.021; nu0=33.69; sigma0=0.032; s_2=acc_var;
 acc_noise_estimate=(1/(nu0+n))*(nu0*sigma0+(n-1)*acc_var +(eta0*n*s_2)/(eta0+50));
 acc_bias_estimate=acc_sum/(n+eta0);
 
-// gyro noise and bias
+//now calculate accelerometer bias and noise estimates
 n=50; eta0=0.037; nu0=2.29; sigma0=0.056; s_2=gyro_var;
 gyro_noise_estimate=(1/(nu0+n))*(nu0*sigma0+(n-1)*acc_var +(eta0*n*s_2)/(eta0+50));
 gyro_bias_estimate=gyro_sum/(n+eta0);
 
-muC=[acc_bias_estimate, gyro_bias_estimate];
-sigmaC=[acc_noise_estimate, gyro_noise_estimate];
+/*save our estimates into a single variable of size 2 for each sensor for part 2*/
+muC={acc_bias_estimate, gyro_bias_estimate};
+sigmaC={acc_noise_estimate, gyro_noise_estimate};
 /* END CALIBRATION */
 ```
 
@@ -193,9 +194,9 @@ Now let's get to the code:
 
 /* BEGIN UPDATE STEP */
 
-//loop indefintely
+//loop indefintely. Each loop computes one update step
 while(1){
-	//take some readings
+	//take one reading for each sensor
 	acc_read = readAcc(); //take an accelerometer observation
 	gyro_read = readGyro(); //take a gyroscope observation
 	y=[acc_read,gyro_read];
@@ -213,7 +214,7 @@ while(1){
 	pass muPost to motor control code to rebalance...
 	///////////////////////////////////////////
 
-	delay(10); //delay 10 milliseconds before starting the next update
+	delay(10); //delay 10 milliseconds before starting the next update. 10 millisecond delays gives us 100 updates per second
 }
 
 /* END UPDATE STEP */
