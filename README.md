@@ -55,7 +55,7 @@ While we don't know what the bias and noise values truly are, we do however have
  <img src="readmefiles/noisegyro.png">
 
  <img src="readmefiles/arrowdown.jpg" width="150">
-
+These numbers are then converted into the correct units
 Sensor | Manufacturer's Bias Estimate | Manufacturer'as Noise Estimate
 --- | --- | ---
 Accelerometer | 0 | 0.030 degrees^2
