@@ -68,8 +68,8 @@ We'll now use this information to form our own belief of the bias and noise para
  
 Sensor | Our Bias Belief | Our Noise Belief
 --- | --- | ---
-Accelerometer | 95% between -3 and 3 | 95%  between 0 and 0.05
-Gyroscope |  95% between -2 and 2  |  95%  between 0 and 0.08
+Accelerometer | 95% between -3 and 3 centered at 0 | 95%  between 0 and 0.05 centered at 0.030
+Gyroscope |  95% between -2 and 2 centered at 0  |  95%  between 0 and 0.08 centered at 0.048
 
 
 By using a conjugate prior distribution for an unknown mean and unknown variance normal sampling distribution we arrive at a Normal-Inverse-Chi-Squared distribution.
