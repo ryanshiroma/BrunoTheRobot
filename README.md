@@ -251,9 +251,9 @@ alt="Bruno Video" width="240" height="180" border="10" /></a>
 
 ## References
 
-- Gelman, Andrew. *Bayesian Data Analysis*. Chapman & Hall CRC, 2014. Print.
-
 - Dr. Bee Leng Lee. Lecture slides. Math 264, SJSU. Fall 2016.
+
+- Gelman, Andrew. *Bayesian Data Analysis*. Chapman & Hall CRC, 2014. Print.
 
 - *LSM303DLHC: Ultra-compact high-performance eCompass module: 3D accelerometer and 3D magnetometer*. ST Electronics. Nov 2013. No 018771. Rev. 2
 
