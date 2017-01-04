@@ -2,7 +2,7 @@
 
 <img align="right" src="readmefiles/dog.jpg" width="360">
 
-Balancing robots have always been a fascinating concept to me. Although it's second-nature to us to stand upright, watching a 1 year old baby or robot do the same feels so surreal. The vulnerability of unstable footing seems so humanizing - counter to the traditional notion of a rugged, calculated, robot. And with the recent introduction of low cost sensor electronics, building a robot to emulate this movement is within reach of any electronics hobbyist. 
+Balancing robots have always been a fascinating concept to me. Although it's second-nature to us to stand upright, watching a 1 year old standing for the first time feels so surreal. The vulnerability of unstable footing seems so humanizing - counter to the traditional notion of a "robotic", calculated, robot. And with the recent introduction of low cost sensor electronics, building a robot to emulate this movement is within reach of any electronics hobbyist. 
 
 So let's first stop and think about how we balance on our two feet. When we feel that we are falling forward, we take a step forward, and when we feel we are falling backward, we take a step back. This same idea goes for two wheeled robots; If the robot knows its leaning in one direction, it can correct itself by driving in the direction of that lean. Therefore, the only information needed in order to keep a two-wheeled robot upright is the degree of this lean. This seems simple enough... so let's design a robot to automate this balancing act!
 
@@ -91,6 +91,7 @@ Each posterior distribution will be formulated as follows:
 where n=50, and s^2 is the variance of the 20 observed readings.
 Knowing this, our posterior means for bias and noise are  <img src="http://mathurl.com/zdychrf.png">
 With these simple derivations it becomes simple enough to code up the estimates in just a few lines of code!
+*the actual completed code is a little bit more involved due to the syntax of C. For example I did not initialize any variables below. Please check the full code file for the actual code.*
 ```C
 /* BEGIN CALIBRATION */
 
@@ -189,6 +190,7 @@ These posterior will then be recycled as part of the prior for the next time ste
 
 Phew, all done!
 Now let's get to the code:
+**Note:** *This is psuedo code to make it more readable. Matrix algebra isn't implemented in C as it is below; In the actual code, a formula was hand written out to calculate each matrix element(2x2)*
 ```C
 
 
