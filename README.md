@@ -1,7 +1,5 @@
 # Coding a two-wheeled robot with a Bayesian Analysis Approach
 
-
-
 <img align="right" src="readmefiles/dog.jpg" width="360">
 
 Balancing robots have always been a fascinating concept to me. Although it's second-nature to us to stand upright, watching a 1 year old standing for the first time feels so surreal. The vulnerability of unstable footing seems so humanizing - counter to the traditional notion of a "robotic", calculated, robot. And with the recent introduction of low cost sensor electronics, building a robot to emulate this movement is within reach of any electronics hobbyist. 
@@ -246,6 +244,7 @@ https://arduinodiy.wordpress.com/2012/02/28/timer-interrupts/
 2. Try to incorporate the uncertainty in our bias estimates in our updating step. As of now, this information is not used in the analysis.
 3. Increase the sample size per update. The current setup updates the model after each and every observation 100 times per second. If we increase the sample rate to 500 times per second and update 25 times per second, we can obtain 20 readings for each update. According to the manufacturer's datasheet, sampling at higher rates increases the noise but collecting more data per update allows us to do some posterior predictive checking. 
 
+## Videos of Bruno
 <a href="thttps://www.youtube.com/watch?v=mgsdeXvIspM
 " target="_blank"><img src="http://img.youtube.com/vi/mgsdeXvIspM/0.jpg" 
 alt="Bruno Video 2" width="240" height="180" border="10" /></a>
