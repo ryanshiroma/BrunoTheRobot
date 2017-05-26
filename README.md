@@ -1,5 +1,5 @@
 # Coding a two-wheeled robot with a Bayesian Analysis Approach
-
+Team Members: Kristel Lenk, Aran Lee, Andrew Zastovnik, Ryan Shiroma
 <img align="right" src="readmefiles/dog.jpg" width="360">
 
 Balancing robots have always been a fascinating concept to me. Although it's second-nature to us to stand upright, watching a 1 year old standing for the first time feels so surreal. The vulnerability of unstable footing seems so humanizing - counter to the traditional notion of a "robotic", calculated, robot. And with the recent introduction of low cost sensor electronics, building a robot to emulate this movement is within reach of any electronics hobbyist. 
