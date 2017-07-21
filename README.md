@@ -1,5 +1,6 @@
 # Coding a two-wheeled robot with a Bayesian Analysis Approach
-**Thanks to my team members!: Kristel Lenk, Aran Lee, Andrew Zastovnik**
+**Thanks to my team members: Kristel Lenk, Aran Lee, Andrew Zastovnik and professor: Dr. Bee Leng Lee.
+This project was completed for our Bayesian Data Analysis course at SJSU. We were to do some kind of data analysis using Bayesian statistics and this is what we came up with.**
 <img align="right" src="readmefiles/dog.jpg" width="360">
 
 Balancing robots have always been a fascinating concept to me. Although it's second-nature to us to stand upright, watching a 1 year old standing for the first time feels so surreal. The vulnerability of unstable footing seems so humanizing - counter to the traditional notion of a "robotic", calculated, robot. And with the recent introduction of low cost sensor electronics, building a robot to emulate this movement is within reach of any electronics hobbyist. 
